@@ -2,28 +2,16 @@ import ScrollReveal from "./ScrollReveal";
 
 const reasons = [
   {
-    title: "Timezone Overlap",
-    body: "We maintain coverage during US EST and UK business hours. You're not waiting until morning for a reply.",
+    title: "Senior engineers only",
+    body: "Every project is run by engineers with 5+ years in ML. We don't put juniors on client work.",
   },
   {
-    title: "Senior Engineers Throughout",
-    body: "The team you meet is the team that builds. We don't credential-wash and hand off.",
+    title: "We work your hours",
+    body: "Daily standups, fast Slack replies, and async workflows designed for US teams. No timezone headaches.",
   },
   {
-    title: "Clear, Written Communication",
-    body: "Every decision documented. Every sprint summarised. You're never chasing an update.",
-  },
-  {
-    title: "Fixed Pricing, No Surprises",
-    body: "Scope changes are flagged immediately and priced transparently. No invoice ever arrives unexpectedly.",
-  },
-  {
-    title: "Your IP, Fully Protected",
-    body: "NDAs before kickoff. All intellectual property transferred to you on completion. Standard, not optional.",
-  },
-  {
-    title: "Honest Timelines",
-    body: "We give you the real date, not the optimistic one. And we build enough buffer to hit it.",
+    title: "Demo before you sign",
+    body: "We build a working prototype on your actual data before you commit. If you don't love it, walk away.",
   },
 ];
 
@@ -32,23 +20,23 @@ const WhyGloify = () => (
     <div className="max-w-[1200px] mx-auto">
       <ScrollReveal>
         <p className="font-mono text-[11px] text-primary uppercase tracking-[0.14em]">
-          Why Clients Stay
+          Why Gloify
         </p>
         <h2 className="font-display text-[36px] md:text-[48px] text-background mt-4 leading-[1.05]">
-          We've worked hard to be
+          Three reasons clients
           <br />
-          easy to work with.
+          stay with us.
         </h2>
       </ScrollReveal>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-10 mt-16">
+      <div className="grid md:grid-cols-3 gap-10 mt-16">
         {reasons.map((r, i) => (
           <ScrollReveal key={i} delay={i * 0.08}>
             <div className="border-l-2 border-primary pl-5">
-              <h3 className="font-body font-semibold text-[17px] text-background">
+              <h3 className="font-body font-semibold text-[18px] text-background">
                 {r.title}
               </h3>
-              <p className="font-body text-[15px] text-grey-mid mt-2 leading-[1.7]">
+              <p className="font-body text-[15px] text-grey-mid mt-3 leading-[1.7]">
                 {r.body}
               </p>
             </div>

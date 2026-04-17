@@ -19,15 +19,21 @@ const Nav = () => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
   }, [menuOpen]);
 
-  const sectionLinks = ["Work", "Services", "About", "Contact"];
+  const sectionLinks = [
+    { label: "Services", id: "services" },
+    { label: "Industries", id: "industries" },
+    { label: "Results", id: "results" },
+    { label: "How We Work", id: "how" },
+    { label: "Clients", id: "clients" },
+  ];
 
   const scrollTo = (id: string) => {
     setMenuOpen(false);
     if (!isHome) {
-      window.location.href = `/#${id.toLowerCase()}`;
+      window.location.href = `/#${id}`;
       return;
     }
-    const el = document.getElementById(id.toLowerCase());
+    const el = document.getElementById(id);
     el?.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -44,33 +50,33 @@ const Nav = () => {
           </Link>
 
           {/* Desktop links */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden lg:flex items-center gap-7">
             {sectionLinks.map((link) => (
               <button
-                key={link}
-                onClick={() => scrollTo(link)}
-                className="font-body text-[15px] tracking-[0.04em] text-foreground link-hover relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-[1px] after:bottom-[-2px] after:left-0 after:bg-primary after:origin-right after:transition-transform after:duration-200 hover:after:scale-x-100 hover:after:origin-left"
+                key={link.id}
+                onClick={() => scrollTo(link.id)}
+                className="font-body text-[14px] tracking-[0.04em] text-foreground link-hover relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-[1px] after:bottom-[-2px] after:left-0 after:bg-primary after:origin-right after:transition-transform after:duration-200 hover:after:scale-x-100 hover:after:origin-left"
               >
-                {link}
+                {link.label}
               </button>
             ))}
             <Link
               to="/projects"
-              className="font-body text-[15px] tracking-[0.04em] text-foreground link-hover relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-[1px] after:bottom-[-2px] after:left-0 after:bg-primary after:origin-right after:transition-transform after:duration-200 hover:after:scale-x-100 hover:after:origin-left"
+              className="font-body text-[14px] tracking-[0.04em] text-foreground link-hover relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-[1px] after:bottom-[-2px] after:left-0 after:bg-primary after:origin-right after:transition-transform after:duration-200 hover:after:scale-x-100 hover:after:origin-left"
             >
               Projects
             </Link>
             <button
-              onClick={() => scrollTo("Contact")}
-              className="font-body text-[14px] tracking-[0.04em] text-primary border border-primary px-5 py-2 transition-all duration-200 hover:bg-primary hover:text-primary-foreground"
+              onClick={() => scrollTo("contact")}
+              className="font-body text-[14px] tracking-[0.04em] text-primary-foreground bg-primary px-5 py-2 transition-all duration-200 hover:bg-primary-light"
             >
-              Start a Project
+              Book a free call
             </button>
             <ThemeToggle />
           </div>
 
           {/* Mobile right side */}
-          <div className="md:hidden flex items-center gap-3">
+          <div className="lg:hidden flex items-center gap-3">
             <ThemeToggle />
             <button
               className="relative w-6 h-5 flex flex-col justify-between"
@@ -109,11 +115,11 @@ const Nav = () => {
           >
             {sectionLinks.map((link) => (
               <button
-                key={link}
-                onClick={() => scrollTo(link)}
+                key={link.id}
+                onClick={() => scrollTo(link.id)}
                 className="font-display text-3xl text-foreground link-hover"
               >
-                {link}
+                {link.label}
               </button>
             ))}
             <Link
@@ -124,10 +130,10 @@ const Nav = () => {
               Projects
             </Link>
             <button
-              onClick={() => scrollTo("Contact")}
-              className="font-body text-base text-primary border border-primary px-8 py-3 mt-4 transition-all duration-200 hover:bg-primary hover:text-primary-foreground"
+              onClick={() => scrollTo("contact")}
+              className="font-body text-base text-primary-foreground bg-primary px-8 py-3 mt-4 transition-all duration-200 hover:bg-primary-light"
             >
-              Start a Project
+              Book a free call
             </button>
           </motion.div>
         )}
