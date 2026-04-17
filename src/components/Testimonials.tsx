@@ -2,33 +2,41 @@ import ScrollReveal from "./ScrollReveal";
 
 const quotes = [
   {
-    text: "Gloify delivered a working AI pipeline in six weeks with documentation better than most internal engineering teams I have managed.",
-    name: "Marcus T.",
-    role: "CTO — New York, USA",
+    text: "Gloify shipped a working AI agent in 3 weeks that replaced a process three of my team members were doing manually. The ROI case basically wrote itself.",
+    name: "Anup Aggarwal",
+    role: "Co-Founder & CEO, Mintifi",
   },
   {
-    text: "After two failed agency engagements, Gloify was the first team that actually understood the technical scope before writing a line of code.",
-    name: "Sophie K.",
-    role: "Head of Product — Berlin, Germany",
+    text: "What got me was the demo model — we saw it running on our actual data before we signed anything. Most agencies just ask you to trust them. Gloify doesn't.",
+    name: "Kanan Ajmera",
+    role: "Founder & CEO, BuildersPatch",
   },
   {
-    text: "Fast, honest, and they surfaced problems before we did. That is genuinely rare. We have extended three times.",
-    name: "James R.",
-    role: "Founder — London, UK",
+    text: "They told us our original spec was overcomplicated and saved us months of wasted work. That's the kind of honesty you don't get from most vendors.",
+    name: "Ramya Reddy",
+    role: "Founder & COO, Caterx",
+  },
+  {
+    text: "Senior engineers on Slack from day one, weekly demos, no surprises. We've worked with 4 dev shops before Gloify. This is a completely different level.",
+    name: "Ankit Mittal",
+    role: "Founder, Coachcaddy",
   },
 ];
 
 const Testimonials = () => (
-  <section className="px-6 md:px-12 lg:px-20 py-[100px] bg-grey-light">
+  <section id="clients" className="px-6 md:px-12 lg:px-20 py-[100px] bg-grey-light">
     <div className="max-w-[1200px] mx-auto">
       <ScrollReveal>
-        <p className="section-label">Client Feedback</p>
-        <h2 className="font-display text-[36px] md:text-[44px] text-foreground mt-4 leading-[1.05]">
-          Heard directly.
+        <p className="section-label">Clients</p>
+        <h2 className="font-display text-[36px] md:text-[48px] text-foreground mt-4 leading-[1.05]">
+          What people say.
         </h2>
+        <p className="font-body text-[17px] text-grey-text mt-4">
+          We let our clients do the talking.
+        </p>
       </ScrollReveal>
 
-      <div className="grid md:grid-cols-3 gap-6 mt-14">
+      <div className="grid md:grid-cols-2 gap-6 mt-14">
         {quotes.map((q, i) => (
           <ScrollReveal key={i} delay={i * 0.08}>
             <div className="bg-card border border-grey-mid p-9 h-full flex flex-col">
@@ -50,6 +58,12 @@ const Testimonials = () => (
           </ScrollReveal>
         ))}
       </div>
+
+      <ScrollReveal>
+        <p className="font-mono text-[11px] text-grey-text uppercase tracking-[0.14em] text-center mt-16">
+          95+ companies have shipped AI with Gloify
+        </p>
+      </ScrollReveal>
     </div>
   </section>
 );

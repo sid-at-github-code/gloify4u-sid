@@ -3,12 +3,13 @@ import { ArrowRight } from "lucide-react";
 import HeroVisualization from "./HeroVisualization";
 
 const tickerItems = [
-  "Mobile Development",
-  "Web Engineering",
-  "AI and Automation",
-  "Full-Stack",
-  "US and UK Clients",
-  "50+ Projects",
+  "AI Agents & Automation",
+  "LLM & RAG Systems",
+  "AI Web Applications",
+  "AI Mobile Apps",
+  "MLOps & Infrastructure",
+  "95+ Companies Shipped",
+  "98% On-Time Delivery",
 ];
 
 const Hero = () => {
@@ -28,7 +29,7 @@ const Hero = () => {
               transition={{ duration: 0.6 }}
               className="font-mono text-[12px] text-primary uppercase tracking-[0.14em] mb-6"
             >
-              Software Engineering — Est. 2019
+              AI Engineering Company — Since 2017
             </motion.p>
 
             <motion.h1
@@ -37,22 +38,23 @@ const Hero = () => {
               transition={{ duration: 0.6 }}
               className="font-display text-[40px] sm:text-[56px] lg:text-[52px] xl:text-[64px] font-medium text-foreground leading-[0.95]"
             >
-              Software built
+              We build AI that
               <br />
-              to the standard
+              does the work
               <br />
-              your business deserves.
+              your team shouldn't.
             </motion.h1>
 
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="font-body text-[17px] sm:text-[18px] text-grey-text max-w-[480px] mt-7 leading-[1.8]"
+              className="font-body text-[17px] sm:text-[18px] text-grey-text max-w-[520px] mt-7 leading-[1.8]"
             >
-              We work with founders and product teams in the US and UK to
-              design, build, and ship mobile apps, web platforms, AI systems,
-              and automation tools — without the overhead of a large agency.
+              We've helped 95+ companies — fintechs, logistics platforms,
+              ecommerce brands — automate the slow, manual, expensive parts of
+              their operations using AI. We ship a working demo before you pay
+              a dollar.
             </motion.p>
 
             <motion.div
@@ -62,19 +64,28 @@ const Hero = () => {
               className="flex flex-wrap items-center gap-4 mt-11"
             >
               <button
-                onClick={() => scrollTo("work")}
-                className="font-body font-medium text-[15px] bg-primary text-primary-foreground h-12 px-6 transition-colors duration-200 hover:bg-primary-light"
-              >
-                See Our Work
-              </button>
-              <button
                 onClick={() => scrollTo("contact")}
-                className="group font-body font-medium text-[15px] text-primary flex items-center gap-2 underline underline-offset-4 decoration-primary/40 transition-colors duration-200 hover:decoration-primary"
+                className="group font-body font-medium text-[15px] bg-primary text-primary-foreground h-12 px-6 transition-colors duration-200 hover:bg-primary-light flex items-center gap-2"
               >
-                Book an Introduction
+                Book a free call
                 <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
               </button>
+              <button
+                onClick={() => scrollTo("work")}
+                className="font-body font-medium text-[15px] text-primary underline underline-offset-4 decoration-primary/40 transition-colors duration-200 hover:decoration-primary"
+              >
+                See what we've built
+              </button>
             </motion.div>
+
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.7 }}
+              className="font-mono text-[12px] text-grey-text mt-8 tracking-[0.04em]"
+            >
+              95+ companies have shipped with us · 98% on-time delivery
+            </motion.p>
           </div>
 
           {/* Right column — visualization */}

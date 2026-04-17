@@ -1,23 +1,25 @@
+import { ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import ScrollReveal from "./ScrollReveal";
 
 const projects = [
   {
-    category: "AI / Automation",
-    title: "Document Intelligence Platform",
+    category: "Fintech / AI",
+    title: "Loan Document Intelligence",
     description:
-      "An AI-powered document parsing and classification system for a US fintech firm. Reduced manual processing by 80%.",
+      "Cut loan application review from 45 minutes to under 10. AI pipeline reads, classifies, and summarizes every document automatically.",
   },
   {
-    category: "Full-Stack / Web",
-    title: "Client Operations Portal",
+    category: "Logistics / AI",
+    title: "Field Operations Platform",
     description:
-      "A custom enterprise web portal with live data dashboards built for a B2B SaaS company operating across the UK and EU.",
+      "AI-driven dispatch and routing for 400+ field agents across three countries. Real-time ETA prediction and offline-first mobile.",
   },
   {
-    category: "Mobile",
-    title: "Field Logistics Application",
+    category: "E-commerce / Web",
+    title: "Unified Analytics Dashboard",
     description:
-      "A cross-platform mobile app for coordinating field teams across three countries — used by 400+ daily active users.",
+      "Aggregates Shopify, GA, Meta Ads, and Klaviyo with anomaly detection. Saved 4 hours of weekly reporting per analyst.",
   },
 ];
 
@@ -25,13 +27,24 @@ const SelectedWork = () => (
   <section id="work" className="section-padding bg-background">
     <div className="max-w-[1200px] mx-auto">
       <ScrollReveal>
-        <p className="section-label">Selected Work</p>
-        <h2 className="font-display text-[36px] md:text-[48px] text-foreground mt-4 leading-[1.05]">
-          A sample of what we've shipped.
-        </h2>
-        <p className="font-body text-[16px] text-grey-text mt-3">
-          Case studies available on request under NDA.
-        </p>
+        <div className="flex flex-wrap items-end justify-between gap-6">
+          <div>
+            <p className="section-label">Selected Work</p>
+            <h2 className="font-display text-[36px] md:text-[48px] text-foreground mt-4 leading-[1.05]">
+              A sample of what we've shipped.
+            </h2>
+            <p className="font-body text-[16px] text-grey-text mt-3">
+              Case studies available on request under NDA.
+            </p>
+          </div>
+          <Link
+            to="/projects"
+            className="group font-mono text-[12px] text-primary uppercase tracking-[0.14em] flex items-center gap-2 link-hover"
+          >
+            View all projects
+            <ArrowRight className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-1" />
+          </Link>
+        </div>
       </ScrollReveal>
 
       <div className="grid md:grid-cols-3 gap-6 mt-16">
