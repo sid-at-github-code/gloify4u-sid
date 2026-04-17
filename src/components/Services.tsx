@@ -9,22 +9,22 @@ const services = [
   },
   {
     label: "LLM / RAG",
-    title: "LLM & RAG Systems",
+    title: "AI first MCP, RAG and Agentic Systems",
     body: "We plug large language models into your private data — documents, databases, CRMs — so your team can search, query, and summarize information instantly.",
   },
   {
     label: "Web Apps",
-    title: "AI Web Applications",
+    title: "Web and Mobile Applications",
     body: "Full-stack web apps with AI baked in — smart dashboards, recommendation systems, predictive tools. Not just a UI on top of ChatGPT.",
   },
   {
     label: "Mobile",
-    title: "AI Mobile Apps",
+    title: "Native Mobile Apps",
     body: "iOS and Android apps with real AI features — voice interfaces, on-device ML, smart personalization. Built to scale, not just demo well.",
   },
   {
     label: "Infrastructure",
-    title: "MLOps & Infrastructure",
+    title: "MLOps & LLMOps Infrastructure",
     body: "We make sure your AI actually stays alive in production — monitoring, auto-scaling, cost control, retraining pipelines. The boring stuff that matters.",
   },
   {
