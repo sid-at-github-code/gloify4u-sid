@@ -1,5 +1,6 @@
 import Nav from "@/components/Nav";
 import Hero from "@/components/Hero";
+import AskAI from "@/components/AskAI";
 import SocialProof from "@/components/SocialProof";
 import ClientLogos from "@/components/ClientLogos";
 import Services from "@/components/Services";
@@ -17,6 +18,7 @@ const Index = () => (
   <>
     <Nav />
     <Hero />
+    <AskAI />
     <SocialProof />
     <ClientLogos />
     <Services />
