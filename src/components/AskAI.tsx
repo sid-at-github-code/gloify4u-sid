@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect, FormEvent } from "react";
 import { ArrowUp, Loader2 } from "lucide-react";
-import ReactMarkdown from "react-markdown";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { ChatMessage } from "./ChatMessage";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -78,7 +78,7 @@ const AskAI = () => {
                 return copy;
               });
             }
-          } catch {}
+          } catch (_e) { /* stream ended */ }
         }
       }
     } catch (e) {
@@ -157,13 +157,10 @@ const AskAI = () => {
                       {m.content}
                     </div>
                   ) : (
-                    <div className="font-body text-[16px] text-foreground leading-[1.75] prose prose-neutral dark:prose-invert max-w-none prose-p:my-3 prose-headings:font-display prose-headings:font-medium prose-strong:text-foreground prose-a:text-primary">
-                      {m.content ? (
-                        <ReactMarkdown>{m.content}</ReactMarkdown>
-                      ) : (
-                        <Loader2 className="w-4 h-4 animate-spin text-grey-text" />
-                      )}
-                    </div>
+                    <ChatMessage
+                      content={m.content}
+                      streaming={loading && i === messages.length - 1}
+                    />
                   )}
                 </div>
               ))}
