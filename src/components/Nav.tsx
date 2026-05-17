@@ -20,11 +20,10 @@ const Nav = () => {
   }, [menuOpen]);
 
   const sectionLinks = [
-    { label: "Services", id: "services" },
-    { label: "Industries", id: "industries" },
-    { label: "Results", id: "results" },
-    { label: "How We Work", id: "how" },
-    { label: "Clients", id: "clients" },
+    { label: "Services",    id: "services"   },
+    { label: "Industries",  id: "industries" },
+    { label: "Results",     id: "results"    },
+    { label: "Clients",     id: "clients"    },
   ];
 
   const scrollTo = (id: string) => {
@@ -60,6 +59,12 @@ const Nav = () => {
                 {link.label}
               </button>
             ))}
+            <Link
+              to="/how-we-work"
+              className="font-body text-[14px] tracking-[0.04em] text-foreground link-hover relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-[1px] after:bottom-[-2px] after:left-0 after:bg-primary after:origin-right after:transition-transform after:duration-200 hover:after:scale-x-100 hover:after:origin-left"
+            >
+              How We Work
+            </Link>
             <Link
               to="/projects"
               className="font-body text-[14px] tracking-[0.04em] text-foreground link-hover relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-[1px] after:bottom-[-2px] after:left-0 after:bg-primary after:origin-right after:transition-transform after:duration-200 hover:after:scale-x-100 hover:after:origin-left"
@@ -122,6 +127,13 @@ const Nav = () => {
                 {link.label}
               </button>
             ))}
+            <Link
+              to="/how-we-work"
+              onClick={() => setMenuOpen(false)}
+              className="font-display text-3xl text-foreground link-hover"
+            >
+              How We Work
+            </Link>
             <Link
               to="/projects"
               onClick={() => setMenuOpen(false)}
