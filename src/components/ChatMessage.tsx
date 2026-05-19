@@ -1,10 +1,16 @@
 import ReactMarkdown from "react-markdown";
-import { Loader2 } from "lucide-react";
-import { FlowDiagram } from "./FlowDiagram";
+import { FlowDiagram, type FlowNode } from "./FlowDiagram";
 import { TechStack } from "./TechStack";
+import { FeatureIdeas, type Feature } from "./FeatureIdeas";
 
-type FlowNode = { label: string; note?: string };
-type GloifyMeta = { flow?: FlowNode[]; techstack?: string[] };
+type GloifyMeta = {
+  title?:     string;
+  nodes?:     FlowNode[];             // new format — nodes with explicit ids
+  edges?:     [string, string][];     // explicit directed edges between node ids
+  flow?:      FlowNode[];             // old format (backward compat, no edges)
+  techstack?: string[];
+  features?:  Feature[];
+};
 
 const META_BLOCK_RE = /```json:gloify-meta\n([\s\S]*?)\n```/;
 
@@ -19,32 +25,39 @@ function parse(content: string): { text: string; meta: GloifyMeta | null } {
   }
 }
 
-// Strip the opening fence if partially streamed so it never shows raw
 function stripPartialMeta(content: string): string {
   return content.replace(/\n?```json:gloify-meta[\s\S]*$/, "").trimEnd();
 }
 
-type Props = { content: string; streaming: boolean };
+type Props = { content: string; streaming?: boolean };
 
-export const ChatMessage = ({ content, streaming }: Props) => {
-  const displayed = streaming ? stripPartialMeta(content) : (() => {
-    const { text } = parse(content);
-    return text;
-  })();
-  const meta = streaming ? null : parse(content).meta;
+export const ChatMessage = ({ content, streaming = false }: Props) => {
+  const displayed = streaming ? stripPartialMeta(content) : parse(content).text;
+  const meta      = streaming ? null : parse(content).meta;
+
+  const diagramNodes = meta?.nodes ?? meta?.flow;
+  const hasNodes     = (diagramNodes?.length ?? 0) >= 2;
 
   return (
-    <div className="font-body text-[16px] text-foreground leading-[1.75] prose prose-neutral dark:prose-invert max-w-none prose-p:my-3 prose-headings:font-display prose-headings:font-medium prose-strong:text-foreground prose-a:text-primary">
-      {displayed ? (
-        <ReactMarkdown>{displayed}</ReactMarkdown>
-      ) : (
-        <Loader2 className="w-4 h-4 animate-spin text-grey-text" />
+    <div className="font-body text-[15px] text-foreground leading-[1.75]">
+      {displayed && (
+        <div className="prose prose-neutral dark:prose-invert max-w-none prose-p:my-2.5 prose-headings:font-display prose-headings:font-medium prose-strong:text-foreground prose-a:text-primary prose-p:text-[15px]">
+          <ReactMarkdown>{displayed}</ReactMarkdown>
+        </div>
       )}
-      {meta?.flow && meta.flow.length >= 2 && (
-        <FlowDiagram nodes={meta.flow} />
+      {hasNodes && (
+        <FlowDiagram
+          nodes={meta!.nodes}
+          edges={meta!.edges}
+          flow={meta!.flow}
+          title={meta!.title}
+        />
       )}
       {meta?.techstack && meta.techstack.length > 0 && (
         <TechStack items={meta.techstack} />
+      )}
+      {meta?.features && meta.features.length > 0 && (
+        <FeatureIdeas features={meta.features} />
       )}
     </div>
   );
