@@ -47,7 +47,9 @@ export default function SelectedWork() {
             <div>
               <p className="section-label mb-4">Selected Work</p>
               <h2 className="font-display text-[36px] md:text-[48px] text-foreground leading-[1.02]">
-                A sample of what we've shipped.
+                Systems running
+                <br />
+                in production.
               </h2>
             </div>
             <Link

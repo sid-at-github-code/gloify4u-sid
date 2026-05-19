@@ -37,7 +37,7 @@ const Footer = () => {
           <div>
             <p className="font-display text-xl text-foreground">Gloify</p>
             <p className="font-body text-[14px] text-grey-text mt-2 leading-[1.6]">
-              AI engineering company
+              AI engineering & product studio
               <br />
               Since 2017
             </p>

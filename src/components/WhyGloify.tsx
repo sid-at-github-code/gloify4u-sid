@@ -2,16 +2,16 @@ import ScrollReveal from "./ScrollReveal";
 
 const reasons = [
   {
-    title: "Senior engineers only",
-    body: "Every project is run by engineers with 5+ years in ML. We don't put juniors on client work.",
+    title: "Senior engineers, always",
+    body: "Every engagement is run by engineers with 5+ years in ML, AI systems, and production software. We don't staff junior engineers on client work — ever.",
   },
   {
-    title: "We work your hours",
-    body: "Daily standups, fast Slack replies, and async workflows designed for US teams. No timezone headaches.",
+    title: "Your timezone, not ours",
+    body: "Daily standups, same-day Slack responses, and async workflows built for US and UK teams. We've designed our process around your hours, not ours.",
   },
   {
-    title: "Demo before you sign",
-    body: "We build a working prototype on your actual data before you commit. If you don't love it, walk away.",
+    title: "You see it working before you pay",
+    body: "We build a working prototype on your actual data before any contract is signed. If it doesn't impress you, we shake hands and part ways. No invoices, no hard feelings.",
   },
 ];
 
@@ -23,9 +23,9 @@ const WhyGloify = () => (
           Why Gloify
         </p>
         <h2 className="font-display text-[36px] md:text-[48px] text-background mt-4 leading-[1.05]">
-          Three reasons clients
+          What makes a Gloify
           <br />
-          stay with us.
+          engagement different.
         </h2>
       </ScrollReveal>
 

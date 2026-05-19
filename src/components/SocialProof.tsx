@@ -1,10 +1,10 @@
 import ScrollReveal from "./ScrollReveal";
 
 const stats = [
-  { number: "40%", label: "Avg. Drop in Ops Costs" },
-  { number: "3×", label: "Faster Than In-House" },
-  { number: "12×", label: "Avg. ROI Year One" },
-  { number: "8 yrs", label: "Building AI Products" },
+  { number: "40%", label: "Avg. reduction in operational costs" },
+  { number: "3×", label: "Faster than building an in-house AI team" },
+  { number: "12×", label: "Average ROI for clients in year one" },
+  { number: "9 yrs", label: "In AI engineering & product delivery" },
 ];
 
 const SocialProof = () => (

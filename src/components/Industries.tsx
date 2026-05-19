@@ -77,13 +77,12 @@ const Industries = () => (
       <ScrollReveal>
         <p className="section-label">Industries</p>
         <h2 className="font-display text-[36px] md:text-[48px] text-foreground mt-4 leading-[1.05]">
-          We work in
+          Deep expertise
           <br />
-          six verticals.
+          in six industries.
         </h2>
         <p className="font-body text-[17px] text-grey-text max-w-[560px] mt-5 leading-[1.75]">
-          We've gone deep enough in each one to know what actually works —
-          and what doesn't.
+          We've shipped enough production AI in each vertical to know which problems are worth solving — and which AI use cases are still vaporware.
         </p>
       </ScrollReveal>
 

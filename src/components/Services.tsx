@@ -4,33 +4,33 @@ const services = [
   {
     label: "Most Requested",
     title: "AI Agents & Automation",
-    body: "We build AI that handles your repetitive workflows — invoice processing, support tickets, lead qualification, compliance checks — without anyone touching it.",
+    body: "We build AI that takes over the repetitive — invoice processing, support triage, lead qualification, compliance review. No human in the loop. No errors on a Friday afternoon.",
     tag: true,
   },
   {
     label: "LLM / RAG",
-    title: "AI first MCP, RAG and Agentic Systems",
-    body: "We plug large language models into your private data — documents, databases, CRMs — so your team can search, query, and summarize information instantly.",
+    title: "LLM, RAG & Agentic Systems",
+    body: "We connect large language models to your private data — documents, databases, CRMs — so your team can search, interrogate, and surface answers from information that previously took hours to find.",
   },
   {
-    label: "Web Apps",
-    title: "Web and Mobile Applications",
-    body: "Full-stack web apps with AI baked in — smart dashboards, recommendation systems, predictive tools. Not just a UI on top of ChatGPT.",
+    label: "Web",
+    title: "Full-Stack Web Applications",
+    body: "End-to-end web products with AI at their core, not bolted on as an afterthought. Intelligent dashboards, recommendation engines, real-time analytics, workflow automation — platforms built to last.",
   },
   {
     label: "Mobile",
-    title: "Native Mobile Apps",
-    body: "iOS and Android apps with real AI features — voice interfaces, on-device ML, smart personalization. Built to scale, not just demo well.",
+    title: "iOS & Android Applications",
+    body: "Native mobile apps that feel like premium products and behave like intelligent ones — voice interfaces, on-device ML, context-aware personalization. Built to scale beyond the demo.",
   },
   {
     label: "Infrastructure",
     title: "MLOps & LLMOps Infrastructure",
-    body: "We make sure your AI actually stays alive in production — monitoring, auto-scaling, cost control, retraining pipelines. The boring stuff that matters.",
+    body: "We deploy AI that stays deployed. Monitoring, cost control, auto-scaling, and retraining pipelines — the infrastructure layer that keeps your models performing six months after launch, not just on demo day.",
   },
   {
     label: "Free to Start",
     title: "AI Audit & Strategy",
-    body: "Not sure where to start? We'll look at your operations and tell you exactly where AI makes sense — and where it doesn't. Straight talk, no pitch.",
+    body: "We map your operations, identify the highest-leverage AI opportunities, and hand you a clear build roadmap — with honest answers about what's worth building and what isn't. No pitch, no obligation.",
     tag: true,
   },
 ];
@@ -41,12 +41,12 @@ const Services = () => (
       <ScrollReveal>
         <p className="section-label">What We Build</p>
         <h2 className="font-display text-[36px] md:text-[48px] text-foreground mt-4 leading-[1.05]">
-          Six things we're
+          Intelligent systems.
           <br />
-          really good at.
+          Exceptional products.
         </h2>
         <p className="font-body text-[17px] text-grey-text max-w-[520px] mt-5">
-          We don't do everything. We focus on AI — and we go deep.
+          We don't generalize. Every engagement is rooted in AI engineering — whether that's an autonomous agent, a production RAG pipeline, a mobile app, or a full-stack platform.
         </p>
       </ScrollReveal>
 

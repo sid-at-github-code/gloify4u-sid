@@ -19,7 +19,7 @@ const ClientLogos = () => (
     <div className="max-w-[1200px] mx-auto">
       <ScrollReveal>
         <p className="font-mono text-[11px] text-grey-text uppercase tracking-[0.14em] text-center">
-          Some of the companies we've worked with
+          Trusted by growth-stage and enterprise teams across fintech, logistics, proptech, and e-commerce
         </p>
       </ScrollReveal>
 

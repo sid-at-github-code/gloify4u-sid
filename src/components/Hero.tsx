@@ -29,7 +29,7 @@ const Hero = () => {
               transition={{ duration: 0.6 }}
               className="font-mono text-[12px] text-primary uppercase tracking-[0.14em] mb-6"
             >
-              AI Engineering Company — Since 2017
+              AI Engineering & Product Studio — Since 2017
             </motion.p>
 
             <motion.h1
@@ -51,10 +51,11 @@ const Hero = () => {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="font-body text-[17px] sm:text-[18px] text-grey-text max-w-[520px] mt-7 leading-[1.8]"
             >
-              We've helped 95+ companies — fintechs, logistics platforms,
-              ecommerce brands — automate the slow, manual, expensive parts of
-              their operations using AI. We ship a working demo before you pay
-              a dollar.
+              We've shipped AI systems, full-stack web platforms, and mobile
+              apps for 95+ companies — fintechs, logistics platforms, e-commerce
+              brands — replacing the slow, manual, expensive parts of their
+              operations with software that actually thinks. You see a working
+              demo before we ask for a dollar.
             </motion.p>
 
             <motion.div

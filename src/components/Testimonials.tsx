@@ -29,10 +29,12 @@ const Testimonials = () => (
       <ScrollReveal>
         <p className="section-label">Clients</p>
         <h2 className="font-display text-[36px] md:text-[48px] text-foreground mt-4 leading-[1.05]">
-          What people say.
+          Straight from the people
+          <br />
+          we've shipped with.
         </h2>
         <p className="font-body text-[17px] text-grey-text mt-4">
-          We let our clients do the talking.
+          Real feedback from founders and operators at companies we've built for.
         </p>
       </ScrollReveal>
 

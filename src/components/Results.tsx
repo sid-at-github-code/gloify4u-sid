@@ -19,12 +19,12 @@ const Results = () => (
       <ScrollReveal>
         <p className="section-label">Real Results</p>
         <h2 className="font-display text-[36px] md:text-[48px] text-foreground mt-4 leading-[1.05]">
-          Numbers from
+          Impact that shows up
           <br />
-          actual client work.
+          on the balance sheet.
         </h2>
         <p className="font-body text-[17px] text-grey-text max-w-[520px] mt-5">
-          No made-up benchmarks. These are from projects we shipped.
+          No synthetic benchmarks. Every number here came from a real system we shipped for a real client.
         </p>
       </ScrollReveal>
 

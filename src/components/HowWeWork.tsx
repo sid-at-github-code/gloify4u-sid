@@ -3,27 +3,27 @@ import ScrollReveal from "./ScrollReveal";
 const steps = [
   {
     num: "01",
-    title: "Free AI audit",
-    body: "We hop on a 45-minute call, look at your operations, and tell you honestly where AI can help — and where it's overkill.",
+    title: "Opportunity audit",
+    body: "A focused 45-minute call where we map your operations, identify where AI creates the most leverage, and give you an honest read on what's worth building — and what isn't.",
     badge: "No cost, no strings",
   },
   {
     num: "02",
-    title: "Working demo first",
-    body: "Before any contract, we build a prototype on your real data. You see it working. Then you decide if you want to continue.",
-    badge: "See it before you buy it",
+    title: "Prototype on your data",
+    body: "Before any contract exists, we build a working prototype against your real data. You see the system running. Then you decide — no pressure, no pitch.",
+    badge: "See it before you commit",
   },
   {
     num: "03",
-    title: "Build & integrate",
-    body: "We build the full system and connect it to whatever you already use — Salesforce, AWS, Shopify, custom APIs. Weekly demos throughout.",
-    badge: "No surprises",
+    title: "Full build & integration",
+    body: "We engineer the complete system and wire it into your existing stack — Salesforce, AWS, Shopify, custom APIs. Weekly demos and full transparency throughout.",
+    badge: "Zero surprises",
   },
   {
     num: "04",
-    title: "Ship & keep improving",
-    body: "We launch it, monitor it, and keep making it better. Your AI gets smarter the more it runs.",
-    badge: "Continuous improvement",
+    title: "Launch & compound",
+    body: "We ship to production, monitor performance, and iterate. AI systems that are trained on more data get better over time — and we stay with you through that cycle.",
+    badge: "Built to improve",
   },
 ];
 
@@ -33,10 +33,12 @@ const HowWeWork = () => (
       <ScrollReveal>
         <p className="section-label">How We Work</p>
         <h2 className="font-display text-[36px] md:text-[48px] text-foreground mt-4 leading-[1.05]">
-          Simple. Four steps.
+          From first call
+          <br />
+          to production.
         </h2>
         <p className="font-body text-[17px] text-grey-text mt-5 max-w-[520px] leading-[1.75]">
-          We hate complicated processes as much as you do.
+          A tight process built around reducing risk for you — not maximizing billable hours for us.
         </p>
       </ScrollReveal>
 
