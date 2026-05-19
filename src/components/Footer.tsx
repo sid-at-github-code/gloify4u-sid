@@ -43,7 +43,7 @@ const Footer = () => {
             </p>
           </div>
 
-          <div>
+          <nav aria-label="Services">
             <p className="font-mono text-[11px] text-grey-text uppercase tracking-[0.12em] mb-4">
               Services
             </p>
@@ -59,9 +59,9 @@ const Footer = () => {
                 </li>
               ))}
             </ul>
-          </div>
+          </nav>
 
-          <div>
+          <nav aria-label="Industries">
             <p className="font-mono text-[11px] text-grey-text uppercase tracking-[0.12em] mb-4">
               Industries
             </p>
@@ -77,9 +77,9 @@ const Footer = () => {
                 </li>
               ))}
             </ul>
-          </div>
+          </nav>
 
-          <div>
+          <nav aria-label="Company">
             <p className="font-mono text-[11px] text-grey-text uppercase tracking-[0.12em] mb-4">
               Company
             </p>
@@ -106,7 +106,7 @@ const Footer = () => {
                 )
               )}
             </ul>
-          </div>
+          </nav>
         </div>
 
         <div className="border-t border-grey-mid mt-10 pt-6 flex flex-col sm:flex-row justify-between gap-3">

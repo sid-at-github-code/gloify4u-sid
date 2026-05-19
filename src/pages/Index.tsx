@@ -17,19 +17,21 @@ import Footer from "@/components/Footer";
 const Index = () => (
   <>
     <Nav />
-    <Hero />
-    <AskAI />
-    <SocialProof />
-    <ClientLogos />
-    <Services />
-    <WhyGloify />
-    <Results />
-    <HowWeWork />
-    <Industries />
-    <SelectedWork />
-    <Testimonials />
-    <Contact />
-    <FooterCTA />
+    <main id="main-content">
+      <Hero />
+      <AskAI />
+      <SocialProof />
+      <ClientLogos />
+      <Services />
+      <WhyGloify />
+      <Results />
+      <HowWeWork />
+      <Industries />
+      <SelectedWork />
+      <Testimonials />
+      <Contact />
+      <FooterCTA />
+    </main>
     <Footer />
   </>
 );

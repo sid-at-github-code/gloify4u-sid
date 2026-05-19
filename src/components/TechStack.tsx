@@ -65,9 +65,9 @@ const TECH_CATEGORY: Record<string, string> = {
   "flutter": "Frontend", "swift": "Frontend", "kotlin": "Frontend",
   "postgresql": "Data", "postgres": "Data", "supabase": "Data",
   "mongodb": "Data", "redis": "Data", "mysql": "Data",
-  "docker": "Infrastructure", "kubernetes": "Infrastructure", "aws": "Infrastructure",
-  "gcp": "Infrastructure", "azure": "Infrastructure", "vercel": "Infrastructure",
-  "terraform": "Infrastructure",
+  "docker": "Infra", "kubernetes": "Infrastructure", "AWS": "Infra",
+  "gcp": "Infrastructure", "azure": "Infra", "vercel": "Infra",
+  "terraform": "Infra",
 };
 
 const CATEGORY_ORDER = ["AI / ML", "Backend", "Data", "Frontend", "Infrastructure"];
