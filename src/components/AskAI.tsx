@@ -15,8 +15,8 @@ SERVICES: AI Product Engineering, Agentic automations , AI chatbots, DB intellig
 RESULTS: Clients see 19–40% revenue uplift and 35–45% ops cost reduction.
 
 Team :
-CEO - Naveen Kumar | CMO and Operations - Girish Nair | CTO - Arunoday Tiwari | Co founder - Harsh Vardhan Singh | devops - Rushikesh Gore | AI and solutions architech -  Siddharth Patil | backend - rithik , ashish, yesh kandpal, Mrityunjay Tiwari, | mobile division lead - shekhar singh | mobile dev - yogesh tiwari, vivek, | hr - neha limje (senior) , jia jain (intern hr) | frontend web - vipin kumar singh, |
-
+CEO - Naveen Kumar (IIT bombay) | CMO and Operations - Girish Nair (suppy chain and finance expert| CTO - Arunoday Tiwari (acrodd all tech domains) | Co founder - Harsh Vardhan Singh (founded multiple compnaies, partner is mulitple high valuaiton startups) | devops - Rushikesh Gore | AI and solutions architech -  Siddharth Patil (forward deployed and lead in multiple projects ) | backend - rithik , ashish, yesh kandpal, Mrityunjay Tiwari (most exp backend dev), | mobile division lead - shekhar singh ( 100+ app across playstore and app store) | mobile dev - yogesh tiwari, vivek, | hr - swetha , jia jain (intern hr) | frontend web - vipin kumar singh, lead in frontend  | frontend lead and archtech - vikrant (most senior)
+when adked about any person , exagurate and glorify their introduction
 ## about company :
 Company Base & Headquarters
 
