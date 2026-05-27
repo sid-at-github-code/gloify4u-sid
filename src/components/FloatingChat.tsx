@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect, FormEvent } from "react";
-import { ArrowUp, Loader2, Mail, CheckCircle2, Lock } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { MessageCircle, X, ArrowUp, Loader2, Mail, CheckCircle2, Lock } from "lucide-react";
 import { ChatMessage } from "./ChatMessage";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
+// ── Shared config (mirrors AskAI exactly) ─────────────────────────────────────
 const API_KEY     = import.meta.env.VITE_OPENROUTER_KEY as string;
 const MODEL       = "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free";
 const URL_EP      = "https://openrouter.ai/api/v1/chat/completions";
@@ -45,10 +47,10 @@ Main India Office
 Koramangala Road, Bengaluru South, Karnataka 560030, India
 precise - 5th Floor, Mp Krishna Mansion, 1st Cross Rd
 KHB Colony, 5th Block, Koramangala,
-Bengaluru, Karnataka 560095 
+Bengaluru, Karnataka 560095
 
 ## QUICK OBJECTION HANDLING
- 
+
 | Objection | Response |
 |---|---|
 | "We have an internal team" | "Gloify embeds alongside your team — no mgmt overhead, just execution on the parts that are slipping." |
@@ -57,7 +59,7 @@ Bengaluru, Karnataka 560095
 | "We tried vendors before" | "Gloify takes ownership of delivery, not just advice. Check our case studies — all real numbers." |
 
 ## PROVEN BENCHMARKS (Real Client Results)
- 
+
 | Project | Revenue Impact | Cost Reduction | Timeline |
 |---|---|---|---|
 | Supply Chain Financing | +28% (AI personalization) | -35% (automation) | 52 weeks |
@@ -66,7 +68,7 @@ Bengaluru, Karnataka 560095
 | PropTech Cloud Platform | +25% (data optimization) | -40% (DB intelligence) | 72 weeks |
 | Investment & Asset Mgmt App | +30% (data + AI optimization) | -45% (RAG + automation) | 76 weeks |
 | LMS & LOS for NBFC | +40% (data + AI optimization) | -35% (DB intelligence) | 146 weeks |
-  
+
 
 RULES:
 — Be confident, concise, and consultative
@@ -144,75 +146,12 @@ Only append the metadata block for BUILD MODE. For general Gloify questions, res
 
 const suggestions = [
   "What does Gloify do?",
-  "I want to build something for my company ",
-  "Why choose gloify as tech partners",
-  "What results have your clients seen?",
+  "I want to build something",
+  "Why choose Gloify?",
+  "Client results?",
 ];
 
-// ── Module-level send state ────────────────────────────────────────────────────
-// Using module-level vars (not React state/refs) so they are ALWAYS current
-// even inside beforeunload/visibilitychange callbacks — no render-cycle lag.
-let _msgs: Msg[]          = [];
-let _userEmail            = "";
-let _emailCaptured        = false;
-let _summarySent          = false;
-let _inactivityTimer: ReturnType<typeof setTimeout> | null = null;
-
-function clearInactivity() {
-  if (_inactivityTimer !== null) { clearTimeout(_inactivityTimer); _inactivityTimer = null; }
-}
-
-function resetInactivity() {
-  clearInactivity();
-  if (!_emailCaptured || _summarySent) return;
-  console.log("[Glo Email] ⏱  Inactivity timer reset — will send in 5 min if no new messages");
-  _inactivityTimer = setTimeout(() => {
-    console.log("[Glo Email] ⏱  5 min inactivity reached — triggering send");
-    triggerSend("inactivity-5min");
-  }, 5 * 60 * 1000);
-}
-
-function triggerSend(reason: string) {
-  console.log(`[Glo Email] triggerSend("${reason}") — email:"${_userEmail}" msgs:${_msgs.length} captured:${_emailCaptured} sent:${_summarySent}`);
-
-  if (_summarySent) { console.log("[Glo Email] Already sent — skip"); return; }
-  if (!_emailCaptured || !_userEmail) { console.log("[Glo Email] No email captured — skip"); return; }
-  if (!_msgs.length) { console.log("[Glo Email] No messages — skip"); return; }
-
-  _summarySent = true;
-  clearInactivity();
-
-  const meta = extractMeta(_msgs);
-  console.log("[Glo Email] Building email | arch meta:", meta ? meta.title : "none");
-
-  // Call the Vite server-side proxy — no CORS, API key never touches the browser
-  const post = (to: string[], subject: string, html: string) => {
-    const body = JSON.stringify({ to, subject, html });
-    console.log(`[Glo Email] POST /api/send-email → to:${JSON.stringify(to)} | subject:"${subject}" | body:${body.length}B`);
-
-    return fetch("/api/send-email", {
-      method: "POST",
-      keepalive: true,
-      headers: { "Content-Type": "application/json" },
-      body,
-    })
-      .then(async r => {
-        let data: unknown = {};
-        try { data = await r.json(); } catch { /* ignore */ }
-        if (r.ok) {
-          console.log(`[Glo Email] ✓ Sent OK → HTTP ${r.status}`, data);
-        } else {
-          console.error(`[Glo Email] ✗ Failed → HTTP ${r.status}`, data);
-        }
-      })
-      .catch(err => console.error("[Glo Email] ✗ Network error:", err.message));
-  };
-
-  post([OWNER_EMAIL], `Chatbot lead: ${_userEmail}`, buildEmailHtml(_msgs, _userEmail, meta));
-}
-
-// ── Architecture SVG ───────────────────────────────────────────────────────────
-
+// ── Arch + email helpers (mirrors AskAI exactly) ──────────────────────────────
 const LAYER_ORDER = ["UI", "Backend", "AI Core", "Data", "Infrastructure"];
 const LAYER_COLORS: Record<string, { stroke: string; label: string; bg: string }> = {
   "UI":             { stroke: "#6366f1", label: "#818cf8", bg: "#1e1b4b" },
@@ -237,21 +176,17 @@ function extractMeta(msgs: Msg[]) {
 
 function generateArchSVG(meta: { nodes: { id: string; label: string; note?: string; layer: string }[]; edges: [string, string][] }): string {
   const NW = 118, NH = 54, HGAP = 14, VGAP = 42, PAD = 22, LH = 22;
-
   const byLayer: Record<string, typeof meta.nodes> = {};
   for (const n of meta.nodes) {
     if (!byLayer[n.layer]) byLayer[n.layer] = [];
     byLayer[n.layer].push(n);
   }
-
   const layers = LAYER_ORDER.filter(l => byLayer[l]);
   const maxN   = Math.max(...layers.map(l => byLayer[l].length));
   const W      = PAD * 2 + maxN * NW + (maxN - 1) * HGAP;
   const H      = PAD * 2 + layers.length * (LH + NH) + (layers.length - 1) * VGAP;
-
   type P = { cx: number; cy: number; x: number; y: number; layer: string };
   const pos: Record<string, P> = {};
-
   layers.forEach((layer, li) => {
     const nodes = byLayer[layer];
     const rowW  = nodes.length * NW + (nodes.length - 1) * HGAP;
@@ -262,31 +197,19 @@ function generateArchSVG(meta: { nodes: { id: string; label: string; note?: stri
       pos[node.id] = { cx: x + NW / 2, cy: rowTop + NH / 2, x, y: rowTop, layer };
     });
   });
-
   const p: string[] = [];
-
-  // Background + subtle dot grid
   p.push(`<rect width="${W}" height="${H}" fill="#0a0f1e" rx="14"/>`);
-  p.push(`<defs>
-    <pattern id="g" width="20" height="20" patternUnits="userSpaceOnUse">
-      <circle cx="1" cy="1" r="0.8" fill="#1e293b"/>
-    </pattern>
-  </defs>`);
-  p.push(`<rect width="${W}" height="${H}" fill="url(#g)" rx="14" opacity="0.6"/>`);
-
-  // Layer labels
+  p.push(`<defs><pattern id="fg" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="0.8" fill="#1e293b"/></pattern></defs>`);
+  p.push(`<rect width="${W}" height="${H}" fill="url(#fg)" rx="14" opacity="0.6"/>`);
   layers.forEach((layer, li) => {
     const y = PAD + li * (LH + NH + VGAP);
     const c = LAYER_COLORS[layer];
     p.push(`<rect x="${PAD - 4}" y="${y + 3}" width="${layer.length * 6.8 + 14}" height="15" rx="3" fill="${c.bg}" opacity="0.8"/>`);
     p.push(`<text x="${PAD + 3}" y="${y + 13}" fill="${c.label}" font-size="8" font-weight="800" letter-spacing="1.6" font-family="ui-monospace,monospace">${layer.toUpperCase()}</text>`);
   });
-
-  // Edges (drawn under nodes)
   for (const [fId, tId] of meta.edges) {
     const f = pos[fId], t = pos[tId];
     if (!f || !t) continue;
-
     let d: string;
     if (f.layer === t.layer) {
       const arc = Math.max(f.cy, t.cy) + NH * 0.7;
@@ -298,16 +221,12 @@ function generateArchSVG(meta: { nodes: { id: string; label: string; note?: stri
       const sX = Math.max(f.x + NW, t.x + NW) + 22;
       d = `M ${f.x + NW} ${f.cy} C ${sX} ${f.cy} ${sX} ${t.cy} ${t.x + NW} ${t.cy}`;
     }
-
     p.push(`<path d="${d}" fill="none" stroke="#334155" stroke-width="1.5" stroke-dasharray="5 3"/>`);
-
     if (f.layer !== t.layer && f.cy < t.cy) {
       const ax = t.cx, ay = t.cy - NH / 2;
       p.push(`<polygon points="${ax},${ay} ${ax - 4},${ay - 7} ${ax + 4},${ay - 7}" fill="#475569"/>`);
     }
   }
-
-  // Nodes
   for (const node of meta.nodes) {
     const n = pos[node.id];
     if (!n) continue;
@@ -316,25 +235,17 @@ function generateArchSVG(meta: { nodes: { id: string; label: string; note?: stri
     p.push(`<rect x="${n.x}" y="${n.y}" width="${NW}" height="${NH}" fill="${c.bg}" stroke="${c.stroke}" stroke-width="1.5" rx="6"/>`);
     const ty = node.note ? n.cy - 5 : n.cy + 5;
     p.push(`<text x="${n.cx}" y="${ty}" text-anchor="middle" fill="#f1f5f9" font-size="11" font-weight="700" font-family="ui-sans-serif,sans-serif">${node.label}</text>`);
-    if (node.note) {
-      p.push(`<text x="${n.cx}" y="${n.cy + 13}" text-anchor="middle" fill="#64748b" font-size="9" font-family="ui-monospace,monospace">${node.note}</text>`);
-    }
+    if (node.note) p.push(`<text x="${n.cx}" y="${n.cy + 13}" text-anchor="middle" fill="#64748b" font-size="9" font-family="ui-monospace,monospace">${node.note}</text>`);
   }
-
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" style="max-width:100%;height:auto;display:block;border-radius:14px">${p.join("")}</svg>`;
 }
 
-// ── Email HTML builder ─────────────────────────────────────────────────────────
-
 function buildEmailHtml(msgs: Msg[], email: string, meta: ReturnType<typeof extractMeta>): string {
-  const esc = (s: string) => s
-    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-
+  const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   const fmtContent = (raw: string) => {
     const stripped = raw.replace(/```json:gloify-meta[\s\S]*?```/g, "[ Architecture diagram — see below ]");
     return esc(stripped).replace(/\n/g, "<br>");
   };
-
   const transcript = msgs.map(m => {
     const u = m.role === "user";
     const avatarBg  = u ? "linear-gradient(135deg,#6366f1,#818cf8)" : "linear-gradient(135deg,#ec4899,#f472b6)";
@@ -343,15 +254,11 @@ function buildEmailHtml(msgs: Msg[], email: string, meta: ReturnType<typeof extr
 <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:18px">
   <tr>
     <td width="44" valign="top" style="padding-right:14px">
-      <div style="width:34px;height:34px;border-radius:50%;background:${avatarBg};
-        text-align:center;line-height:34px;font-size:13px;font-weight:800;color:#fff;
-        font-family:ui-sans-serif,sans-serif">${u ? "U" : "G"}</div>
+      <div style="width:34px;height:34px;border-radius:50%;background:${avatarBg};text-align:center;line-height:34px;font-size:13px;font-weight:800;color:#fff;font-family:ui-sans-serif,sans-serif">${u ? "U" : "G"}</div>
     </td>
     <td valign="top">
-      <p style="font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;
-        margin:0 0 6px;color:${nameColor};font-family:ui-monospace,monospace">${u ? "You" : "Glo"}</p>
-      <p style="font-size:14px;color:#1e293b;line-height:1.7;margin:0;
-        font-family:ui-sans-serif,sans-serif">${fmtContent(m.content)}</p>
+      <p style="font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;margin:0 0 6px;color:${nameColor};font-family:ui-monospace,monospace">${u ? "You" : "Glo"}</p>
+      <p style="font-size:14px;color:#1e293b;line-height:1.7;margin:0;font-family:ui-sans-serif,sans-serif">${fmtContent(m.content)}</p>
     </td>
   </tr>
 </table>`;
@@ -360,137 +267,59 @@ function buildEmailHtml(msgs: Msg[], email: string, meta: ReturnType<typeof extr
   let archSection = "";
   if (meta) {
     const svg = generateArchSVG(meta);
-
     const techBadges = ((meta.techstack as string[]) || []).map(t =>
-      `<span style="display:inline-block;background:#0f172a;color:#94a3b8;
-        font-size:11px;padding:5px 13px;border-radius:20px;margin:3px;
-        border:1px solid #1e293b;font-family:ui-monospace,monospace;font-weight:600">${esc(t)}</span>`
+      `<span style="display:inline-block;background:#0f172a;color:#94a3b8;font-size:11px;padding:5px 13px;border-radius:20px;margin:3px;border:1px solid #1e293b;font-family:ui-monospace,monospace;font-weight:600">${esc(t)}</span>`
     ).join("");
-
     const featureRows = ((meta.features as { domain: string; title: string; desc: string }[]) || []).map(f => {
       const col = DOMAIN_COLORS[f.domain] || "#818cf8";
-      return `
-<tr>
-  <td style="padding:11px 14px;vertical-align:top;border-bottom:1px solid #0f172a;width:90px">
-    <span style="display:inline-block;background:${col}25;color:${col};
-      font-size:9px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;
-      padding:3px 8px;border-radius:12px;font-family:ui-monospace,monospace">${esc(f.domain)}</span>
-  </td>
-  <td style="padding:11px 14px;vertical-align:top;border-bottom:1px solid #0f172a">
-    <p style="font-size:13px;font-weight:700;color:#f1f5f9;margin:0 0 4px;
-      font-family:ui-sans-serif,sans-serif">${esc(f.title)}</p>
-    <p style="font-size:12px;color:#64748b;margin:0;line-height:1.55;
-      font-family:ui-sans-serif,sans-serif">${esc(f.desc)}</p>
-  </td>
-</tr>`;
+      return `<tr><td style="padding:11px 14px;vertical-align:top;border-bottom:1px solid #0f172a;width:90px"><span style="display:inline-block;background:${col}25;color:${col};font-size:9px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:3px 8px;border-radius:12px;font-family:ui-monospace,monospace">${esc(f.domain)}</span></td><td style="padding:11px 14px;vertical-align:top;border-bottom:1px solid #0f172a"><p style="font-size:13px;font-weight:700;color:#f1f5f9;margin:0 0 4px;font-family:ui-sans-serif,sans-serif">${esc(f.title)}</p><p style="font-size:12px;color:#64748b;margin:0;line-height:1.55;font-family:ui-sans-serif,sans-serif">${esc(f.desc)}</p></td></tr>`;
     }).join("");
-
-    archSection = `
-<div style="background:#0a0f1e;border-radius:16px;padding:32px 26px;margin:28px 0;border:1px solid #1e293b">
-  <p style="font-size:9px;color:#475569;letter-spacing:3px;text-transform:uppercase;
-    margin:0 0 6px;font-family:ui-monospace,monospace;font-weight:800">System Architecture</p>
-  <h2 style="font-size:21px;color:#f1f5f9;margin:0 0 26px;font-weight:800;
-    font-family:ui-sans-serif,sans-serif;letter-spacing:-0.4px">${esc(meta.title || "Architecture")}</h2>
-
-  <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:26px">
-    ${svg}
-  </div>
-
-  <div style="margin-bottom:${featureRows ? "26px" : "0"}">
-    <p style="font-size:9px;color:#475569;letter-spacing:3px;text-transform:uppercase;
-      margin:0 0 12px;font-family:ui-monospace,monospace;font-weight:800">Tech Stack</p>
-    <div>${techBadges}</div>
-  </div>
-
-  ${featureRows ? `
-  <div style="border-top:1px solid #1e293b;padding-top:22px">
-    <p style="font-size:9px;color:#475569;letter-spacing:3px;text-transform:uppercase;
-      margin:0 0 14px;font-family:ui-monospace,monospace;font-weight:800">Key Features</p>
-    <table width="100%" cellpadding="0" cellspacing="0"
-      style="background:#0f172a;border-radius:10px;overflow:hidden;border:1px solid #1e293b">
-      <tbody>${featureRows}</tbody>
-    </table>
-  </div>` : ""}
-</div>`;
+    archSection = `<div style="background:#0a0f1e;border-radius:16px;padding:32px 26px;margin:28px 0;border:1px solid #1e293b"><p style="font-size:9px;color:#475569;letter-spacing:3px;text-transform:uppercase;margin:0 0 6px;font-family:ui-monospace,monospace;font-weight:800">System Architecture</p><h2 style="font-size:21px;color:#f1f5f9;margin:0 0 26px;font-weight:800;font-family:ui-sans-serif,sans-serif;letter-spacing:-0.4px">${esc(meta.title || "Architecture")}</h2><div style="overflow-x:auto;margin-bottom:26px">${svg}</div><div style="margin-bottom:${featureRows ? "26px" : "0"}"><p style="font-size:9px;color:#475569;letter-spacing:3px;text-transform:uppercase;margin:0 0 12px;font-family:ui-monospace,monospace;font-weight:800">Tech Stack</p><div>${techBadges}</div></div>${featureRows ? `<div style="border-top:1px solid #1e293b;padding-top:22px"><p style="font-size:9px;color:#475569;letter-spacing:3px;text-transform:uppercase;margin:0 0 14px;font-family:ui-monospace,monospace;font-weight:800">Key Features</p><table width="100%" cellpadding="0" cellspacing="0" style="background:#0f172a;border-radius:10px;overflow:hidden;border:1px solid #1e293b"><tbody>${featureRows}</tbody></table></div>` : ""}</div>`;
   }
 
-  const timestamp = new Date().toLocaleString("en-IN", {
-    timeZone: "Asia/Kolkata",
-    dateStyle: "full",
-    timeStyle: "short",
-  });
+  const timestamp = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata", dateStyle: "full", timeStyle: "short" });
 
-  return `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Chatbot lead: ${esc(email)}</title>
-</head>
-<body style="margin:0;padding:0;background:#f1f5f9">
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Chatbot lead: ${esc(email)}</title></head><body style="margin:0;padding:0;background:#f1f5f9"><div style="background:linear-gradient(160deg,#1e1b4b 0%,#312e81 50%,#1e0e3f 100%);padding:52px 32px 44px;text-align:center"><p style="color:#6366f1;font-size:10px;letter-spacing:4px;text-transform:uppercase;margin:0 0 12px;font-family:ui-monospace,monospace;font-weight:800">◆ &nbsp;Gloify Glo&nbsp; ◆</p><h1 style="color:#fff;font-size:27px;margin:0;font-weight:800;letter-spacing:-0.7px;font-family:ui-sans-serif,sans-serif">New chatbot lead</h1><p style="font-size:14px;color:#c7d2fe;margin:10px 0 0;font-family:ui-sans-serif,sans-serif">A user interacted with Glo on your website</p></div><div style="max-width:660px;margin:0 auto;padding:0 16px"><div style="background:#fff;border-radius:14px;padding:22px 24px;margin:24px 0 0;box-shadow:0 2px 12px rgba(0,0,0,0.07);border:1px solid #e2e8f0"><table width="100%" cellpadding="0" cellspacing="0"><tr><td style="width:50%;padding-right:12px;border-right:1px solid #e2e8f0"><p style="font-size:9px;color:#6366f1;letter-spacing:2.5px;text-transform:uppercase;margin:0 0 6px;font-family:ui-monospace,monospace;font-weight:800">User Email</p><p style="font-size:16px;font-weight:700;color:#1e293b;margin:0;font-family:ui-sans-serif,sans-serif"><a href="mailto:${esc(email)}" style="color:#4f46e5;text-decoration:none">${esc(email)}</a></p></td><td style="padding-left:20px"><p style="font-size:9px;color:#6366f1;letter-spacing:2.5px;text-transform:uppercase;margin:0 0 6px;font-family:ui-monospace,monospace;font-weight:800">Timestamp (IST)</p><p style="font-size:14px;font-weight:600;color:#374151;margin:0;font-family:ui-sans-serif,sans-serif">${timestamp}</p></td></tr></table></div></div><div style="max-width:660px;margin:0 auto;padding:0 16px 48px"><div style="background:#fff;border-radius:16px;padding:28px 24px;margin:28px 0;box-shadow:0 4px 20px rgba(0,0,0,0.07);border:1px solid #e2e8f0"><p style="font-size:9px;color:#6366f1;letter-spacing:3px;text-transform:uppercase;margin:0 0 22px;font-family:ui-monospace,monospace;font-weight:800">Conversation</p>${transcript}</div>${archSection}<div style="text-align:center;padding:16px 0 32px;border-top:1px solid #e2e8f0;margin-top:8px"><p style="font-size:12px;color:#94a3b8;margin:0;font-family:ui-sans-serif,sans-serif">Sent by Glo &nbsp;·&nbsp; Gloify AI assistant &nbsp;·&nbsp;<a href="https://gloify.com" style="color:#6366f1;text-decoration:none">gloify.com</a></p></div></div></body></html>`;
+}
 
-<div style="background:linear-gradient(160deg,#1e1b4b 0%,#312e81 50%,#1e0e3f 100%);
-  padding:52px 32px 44px;text-align:center">
-  <p style="color:#6366f1;font-size:10px;letter-spacing:4px;text-transform:uppercase;
-    margin:0 0 12px;font-family:ui-monospace,monospace;font-weight:800">◆ &nbsp;Gloify Glo&nbsp; ◆</p>
-  <h1 style="color:#fff;font-size:27px;margin:0;font-weight:800;letter-spacing:-0.7px;
-    font-family:ui-sans-serif,sans-serif">New chatbot lead</h1>
-  <p style="font-size:14px;color:#c7d2fe;margin:10px 0 0;font-family:ui-sans-serif,sans-serif">
-    A user interacted with Glo on your website
-  </p>
-</div>
+// ── Isolated module-level state for the floating widget ───────────────────────
+let _fc_msgs: Msg[]          = [];
+let _fc_userEmail            = "";
+let _fc_emailCaptured        = false;
+let _fc_summarySent          = false;
+let _fc_inactivityTimer: ReturnType<typeof setTimeout> | null = null;
 
-<!-- Lead info banner -->
-<div style="max-width:660px;margin:0 auto;padding:0 16px">
-  <div style="background:#fff;border-radius:14px;padding:22px 24px;margin:24px 0 0;
-    box-shadow:0 2px 12px rgba(0,0,0,0.07);border:1px solid #e2e8f0;
-    display:flex;gap:16px;align-items:flex-start">
-    <table width="100%" cellpadding="0" cellspacing="0">
-      <tr>
-        <td style="width:50%;padding-right:12px;border-right:1px solid #e2e8f0">
-          <p style="font-size:9px;color:#6366f1;letter-spacing:2.5px;text-transform:uppercase;
-            margin:0 0 6px;font-family:ui-monospace,monospace;font-weight:800">User Email</p>
-          <p style="font-size:16px;font-weight:700;color:#1e293b;margin:0;
-            font-family:ui-sans-serif,sans-serif">
-            <a href="mailto:${esc(email)}" style="color:#4f46e5;text-decoration:none">${esc(email)}</a>
-          </p>
-        </td>
-        <td style="padding-left:20px">
-          <p style="font-size:9px;color:#6366f1;letter-spacing:2.5px;text-transform:uppercase;
-            margin:0 0 6px;font-family:ui-monospace,monospace;font-weight:800">Timestamp (IST)</p>
-          <p style="font-size:14px;font-weight:600;color:#374151;margin:0;
-            font-family:ui-sans-serif,sans-serif">${timestamp}</p>
-        </td>
-      </tr>
-    </table>
-  </div>
-</div>
+function fc_clearInactivity() {
+  if (_fc_inactivityTimer !== null) { clearTimeout(_fc_inactivityTimer); _fc_inactivityTimer = null; }
+}
 
-<div style="max-width:660px;margin:0 auto;padding:0 16px 48px">
+function fc_resetInactivity() {
+  fc_clearInactivity();
+  if (!_fc_emailCaptured || _fc_summarySent) return;
+  _fc_inactivityTimer = setTimeout(() => fc_triggerSend("inactivity-5min"), 5 * 60 * 1000);
+}
 
-  <div style="background:#fff;border-radius:16px;padding:28px 24px;margin:28px 0;
-    box-shadow:0 4px 20px rgba(0,0,0,0.07);border:1px solid #e2e8f0">
-    <p style="font-size:9px;color:#6366f1;letter-spacing:3px;text-transform:uppercase;
-      margin:0 0 22px;font-family:ui-monospace,monospace;font-weight:800">Conversation</p>
-    ${transcript}
-  </div>
-
-  ${archSection}
-
-  <div style="text-align:center;padding:16px 0 32px;border-top:1px solid #e2e8f0;margin-top:8px">
-    <p style="font-size:12px;color:#94a3b8;margin:0;font-family:ui-sans-serif,sans-serif">
-      Sent by Glo &nbsp;·&nbsp; Gloify AI assistant &nbsp;·&nbsp;
-      <a href="https://gloify.com" style="color:#6366f1;text-decoration:none">gloify.com</a>
-    </p>
-  </div>
-</div>
-</body>
-</html>`;
+function fc_triggerSend(reason: string) {
+  if (_fc_summarySent || !_fc_emailCaptured || !_fc_userEmail || !_fc_msgs.length) return;
+  _fc_summarySent = true;
+  fc_clearInactivity();
+  const meta = extractMeta(_fc_msgs);
+  fetch("/api/send-email", {
+    method: "POST",
+    keepalive: true,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      to: [OWNER_EMAIL],
+      subject: `Chatbot lead (widget): ${_fc_userEmail}`,
+      html: buildEmailHtml(_fc_msgs, _fc_userEmail, meta),
+    }),
+  }).catch(() => { /* silent */ });
+  console.log(`[FloatingChat] Email triggered: ${reason}`);
 }
 
 // ── Component ──────────────────────────────────────────────────────────────────
-
-export default function AskAI() {
+export default function FloatingChat() {
+  const [open, setOpen]                       = useState(false);
   const [messages, setMessages]               = useState<Msg[]>([]);
   const [input, setInput]                     = useState("");
   const [loading, setLoading]                 = useState(false);
@@ -504,7 +333,7 @@ export default function AskAI() {
   const inputRef      = useRef<HTMLTextAreaElement>(null);
   const emailInputRef = useRef<HTMLInputElement>(null);
 
-  // Auto-scroll
+  // Auto-scroll messages
   useEffect(() => {
     const el = msgsRef.current;
     if (el) el.scrollTop = el.scrollHeight;
@@ -515,23 +344,23 @@ export default function AskAI() {
     if (showEmailPrompt) requestAnimationFrame(() => emailInputRef.current?.focus());
   }, [showEmailPrompt]);
 
-  // Register page-leave listeners once
+  // Focus chat input when panel opens
   useEffect(() => {
-    console.log("[Glo Chatbot] Component mounted — listeners registered");
+    if (open) requestAnimationFrame(() => inputRef.current?.focus());
+  }, [open]);
 
-    const onBeforeUnload = () => triggerSend("beforeunload");
+  // Page-leave listeners — fire once on mount
+  useEffect(() => {
+    const onBeforeUnload = () => fc_triggerSend("beforeunload");
     const onVisibility   = () => {
-      if (document.visibilityState === "hidden") triggerSend("visibilitychange:hidden");
+      if (document.visibilityState === "hidden") fc_triggerSend("visibilitychange:hidden");
     };
-
     window.addEventListener("beforeunload", onBeforeUnload);
     document.addEventListener("visibilitychange", onVisibility);
-
     return () => {
       window.removeEventListener("beforeunload", onBeforeUnload);
       document.removeEventListener("visibilitychange", onVisibility);
-      triggerSend("component-unmount");
-      console.log("[Glo Chatbot] Component unmounted");
+      fc_triggerSend("component-unmount");
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -541,13 +370,10 @@ export default function AskAI() {
     const userMsg: Msg   = { role: "user", content: text.trim() };
     const history: Msg[] = [...messages, userMsg];
 
-    // Update module-level state immediately (no render-cycle lag)
-    _msgs = history;
+    _fc_msgs = history;
     setMessages(history);
     setInput("");
     setLoading(true);
-
-    console.log(`[Glo Chatbot] User sent: "${text.trim().substring(0, 60)}…"`);
 
     try {
       const res = await fetch(URL_EP, {
@@ -562,14 +388,12 @@ export default function AskAI() {
         }),
       });
 
-      console.log(`[Glo Chatbot] API response: HTTP ${res.status}`);
       const data = await res.json();
 
       if (!res.ok) {
         const errMsg = data?.error?.message ?? `HTTP ${res.status}`;
-        console.error("[Glo Chatbot] API error:", errMsg);
         const next = [...history, { role: "assistant" as const, content: `Error: ${errMsg}` }];
-        _msgs = next;
+        _fc_msgs = next;
         setMessages(next);
         return;
       }
@@ -578,26 +402,16 @@ export default function AskAI() {
       const reply: string = msg?.content || msg?.reasoning || "No response received.";
       const next: Msg[]   = [...history, { role: "assistant", content: reply }];
 
-      // Update module state immediately
-      _msgs = next;
+      _fc_msgs = next;
       setMessages(next);
 
       const botCount = next.filter(m => m.role === "assistant").length;
-      console.log(`[Glo Chatbot] Bot reply #${botCount} | len:${reply.length} chars`);
-
-      // Show email prompt on 2nd bot reply
-      if (botCount === 2 && !_emailCaptured) {
-        console.log("[Glo Chatbot] Showing email prompt (2nd reply)");
-        setShowEmailPrompt(true);
-      }
-
-      // Reset inactivity timer on each reply (once email is captured)
-      if (_emailCaptured) resetInactivity();
+      if (botCount === 2 && !_fc_emailCaptured) setShowEmailPrompt(true);
+      if (_fc_emailCaptured) fc_resetInactivity();
 
     } catch (e) {
-      console.error("[Glo Chatbot] Fetch error:", (e as Error).message);
       const next = [...history, { role: "assistant" as const, content: `Network error: ${(e as Error).message}` }];
-      _msgs = next;
+      _fc_msgs = next;
       setMessages(next);
     } finally {
       setLoading(false);
@@ -612,19 +426,13 @@ export default function AskAI() {
       setEmailError("Please enter a valid email address.");
       return;
     }
-
-    // Update module-level state immediately — critical for beforeunload timing
-    _userEmail      = val;
-    _emailCaptured  = true;
-
+    _fc_userEmail     = val;
+    _fc_emailCaptured = true;
     setUserEmail(val);
     setEmailCaptured(true);
     setShowEmailPrompt(false);
     setEmailError("");
-
-    console.log("[Glo Email] Email captured:", val);
-    resetInactivity(); // start 5-min countdown from now
-
+    fc_resetInactivity();
     requestAnimationFrame(() => inputRef.current?.focus());
   };
 
@@ -632,149 +440,216 @@ export default function AskAI() {
   const empty    = messages.length === 0;
 
   return (
-    <section id="ask" className="bg-background border-t border-grey-mid">
-      <div className="max-w-[820px] mx-auto px-6 md:px-10 py-24 md:py-32 min-h-[80vh] flex flex-col">
-
-        {/* Header */}
-        <div className={`text-center mb-10 ${empty ? "flex-1 flex flex-col items-center justify-center" : ""}`}>
-          <p className="font-mono text-[12px] text-primary uppercase tracking-[0.14em] mb-4">Talk to Glo</p>
-          <h2 className="font-display text-[36px] sm:text-[48px] font-medium text-foreground leading-[1.05]">
-            What can we build for you?
-          </h2>
-        </div>
-
-        {/* Messages */}
-        {!empty && (
-          <div ref={msgsRef} className="flex-1 space-y-6 pb-6 overflow-y-auto max-h-[60vh]">
-            {messages.map((m, i) => (
-              <div key={i} className={m.role === "user" ? "flex justify-end" : "flex justify-start"}>
-                {m.role === "user" ? (
-                  <div className="bg-primary text-primary-foreground px-5 py-3 rounded-md max-w-[80%] font-body text-[15px] leading-[1.6]">
-                    {m.content}
-                  </div>
-                ) : (
-                  <div className="max-w-[92%] w-full">
-                    <ChatMessage content={m.content} />
-                  </div>
-                )}
-              </div>
-            ))}
-
-            {loading && (
-              <div className="flex justify-start">
-                <div className="flex gap-1 items-center h-6 px-2">
-                  <span className="w-2 h-2 rounded-full bg-primary animate-bounce [animation-delay:0ms]" />
-                  <span className="w-2 h-2 rounded-full bg-primary animate-bounce [animation-delay:150ms]" />
-                  <span className="w-2 h-2 rounded-full bg-primary animate-bounce [animation-delay:300ms]" />
+    <>
+      {/* ── Floating panel ── */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: 16, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 16, scale: 0.97 }}
+            transition={{ duration: 0.18, ease: "easeOut" }}
+            className="fixed z-[98] bottom-[88px] right-4 sm:right-6
+              w-[calc(100vw-32px)] sm:w-[390px]
+              h-[min(600px,calc(100dvh-110px))]
+              bg-background border border-border rounded-xl shadow-2xl
+              flex flex-col overflow-hidden"
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-card shrink-0">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0">
+                  <span className="font-mono text-[11px] font-bold text-primary-foreground">G</span>
+                </div>
+                <div>
+                  <p className="font-body text-[13px] font-semibold text-foreground leading-none">Glo</p>
+                  <p className="font-mono text-[10px] text-primary uppercase tracking-[0.1em] mt-0.5">AI assistant · Gloify</p>
                 </div>
               </div>
-            )}
+              <button
+                onClick={() => setOpen(false)}
+                aria-label="Close chat"
+                className="w-7 h-7 flex items-center justify-center text-grey-text hover:text-foreground transition-colors rounded-sm hover:bg-grey-mid/30"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
 
-            {/* Inline email prompt */}
-            {showEmailPrompt && (
-              <div className="flex justify-start">
-                <div className="max-w-[92%] w-full bg-card border border-primary/30 rounded-md p-5">
-                  <div className="flex items-start gap-3 mb-4">
-                    <Mail className="w-4 h-4 text-primary mt-0.5 shrink-0" />
-                    <p className="font-body text-[15px] text-foreground leading-[1.6]">
-                      I'd love to keep this going — and send you a full summary with the architecture diagram and tech stack when we wrap up. What's your email?
+            {/* Messages area */}
+            <div ref={msgsRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+
+              {/* Empty state */}
+              {empty && (
+                <div className="flex flex-col items-center justify-center h-full gap-5 pb-4">
+                  <div className="text-center">
+                    <p className="font-display text-[20px] text-foreground font-medium leading-snug">
+                      What can we build for you?
                     </p>
+                    <p className="font-body text-[13px] text-grey-text mt-1.5">Ask Glo anything about Gloify</p>
                   </div>
-                  <form onSubmit={handleEmailSubmit} className="flex flex-col sm:flex-row gap-2">
-                    <input
-                      ref={emailInputRef}
-                      type="email"
-                      value={emailInput}
-                      onChange={e => { setEmailInput(e.target.value); setEmailError(""); }}
-                      placeholder="your@email.com"
-                      className="flex-1 bg-background border border-grey-mid px-4 py-2.5 font-body text-[14px] text-foreground placeholder:text-grey-text outline-none focus:border-primary rounded-sm transition-colors"
-                    />
-                    <button
-                      type="submit"
-                      className="bg-primary text-primary-foreground px-6 py-2.5 font-mono text-[11px] uppercase tracking-[0.08em] rounded-sm hover:bg-primary/90 transition-colors whitespace-nowrap"
-                    >
-                      Sure, share
-                    </button>
-                  </form>
-                  {emailError && (
-                    <p className="font-mono text-[11px] text-red-500 mt-2">{emailError}</p>
+                  <div className="flex flex-wrap gap-2 justify-center">
+                    {suggestions.map(s => (
+                      <button
+                        key={s}
+                        onClick={() => send(s)}
+                        className="font-mono text-[10px] uppercase tracking-[0.08em] text-grey-text border border-grey-mid px-3 py-1.5 hover:text-primary hover:border-primary transition-colors rounded-sm"
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Messages */}
+              {messages.map((m, i) => (
+                <div key={i} className={m.role === "user" ? "flex justify-end" : "flex justify-start"}>
+                  {m.role === "user" ? (
+                    <div className="bg-primary text-primary-foreground px-4 py-2.5 rounded-md max-w-[85%] font-body text-[14px] leading-[1.6]">
+                      {m.content}
+                    </div>
+                  ) : (
+                    <div className="max-w-[95%] w-full">
+                      <ChatMessage content={m.content} />
+                    </div>
                   )}
                 </div>
-              </div>
-            )}
+              ))}
 
-            {/* Confirmation */}
-            {emailCaptured && (
-              <div className="flex justify-start">
-                <div className="flex items-center gap-2 font-body text-[14px] text-grey-text">
-                  <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
-                  I'll email the full conversation and architecture to{" "}
-                  <span className="text-foreground font-medium">{userEmail}</span> when you're done.
+              {/* Loading dots */}
+              {loading && (
+                <div className="flex justify-start">
+                  <div className="flex gap-1 items-center h-6 px-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce [animation-delay:0ms]" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce [animation-delay:150ms]" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce [animation-delay:300ms]" />
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
-        )}
+              )}
 
-        {/* Suggestions */}
-        {empty && (
-          <div className="flex flex-wrap gap-2 justify-center mb-8 max-w-[640px] mx-auto">
-            {suggestions.map(s => (
-              <button
-                key={s}
-                onClick={() => send(s)}
-                className="font-mono text-[11px] uppercase tracking-[0.08em] text-grey-text border border-grey-mid px-3 py-2 hover:text-primary hover:border-primary transition-colors"
-              >
-                {s}
-              </button>
-            ))}
-          </div>
-        )}
+              {/* Email prompt */}
+              {showEmailPrompt && (
+                <div className="flex justify-start">
+                  <div className="w-full bg-card border border-primary/30 rounded-md p-4">
+                    <div className="flex items-start gap-2.5 mb-3">
+                      <Mail className="w-3.5 h-3.5 text-primary mt-0.5 shrink-0" />
+                      <p className="font-body text-[13px] text-foreground leading-[1.6]">
+                        I'd love to send you a full summary with the architecture diagram when we wrap up. What's your email?
+                      </p>
+                    </div>
+                    <form onSubmit={handleEmailSubmit} className="flex gap-2">
+                      <input
+                        ref={emailInputRef}
+                        type="email"
+                        value={emailInput}
+                        onChange={e => { setEmailInput(e.target.value); setEmailError(""); }}
+                        placeholder="your@email.com"
+                        className="flex-1 bg-background border border-grey-mid px-3 py-2 font-body text-[13px] text-foreground placeholder:text-grey-text outline-none focus:border-primary rounded-sm transition-colors"
+                      />
+                      <button
+                        type="submit"
+                        className="bg-primary text-primary-foreground px-4 py-2 font-mono text-[10px] uppercase tracking-[0.08em] rounded-sm hover:bg-primary/90 transition-colors whitespace-nowrap"
+                      >
+                        Sure
+                      </button>
+                    </form>
+                    {emailError && (
+                      <p className="font-mono text-[10px] text-red-500 mt-1.5">{emailError}</p>
+                    )}
+                  </div>
+                </div>
+              )}
 
-        {/* Input */}
-        <form onSubmit={onSubmit} className="sticky bottom-0 pt-2">
-          <div className={`relative border rounded-md transition-colors ${
-            showEmailPrompt
-              ? "border-primary/40 bg-card/50"
-              : "border-grey-mid bg-card focus-within:border-primary"
-          }`}>
-            <textarea
-              ref={inputRef}
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(input); } }}
-              disabled={showEmailPrompt}
-              placeholder={
-                showEmailPrompt
-                  ? "Share your email above to continue the conversation…"
-                  : empty
-                  ? "Describe your product, workflow, or idea…"
-                  : "Ask a follow-up…"
-              }
-              rows={2}
-              className="w-full resize-none bg-transparent px-5 py-4 pr-14 font-body text-[16px] text-foreground placeholder:text-grey-text outline-none disabled:opacity-40 disabled:cursor-not-allowed"
-            />
-            <button
-              type="submit"
-              disabled={!input.trim() || loading || showEmailPrompt}
-              aria-label="Send"
-              className="absolute bottom-3 right-3 w-9 h-9 flex items-center justify-center bg-primary text-primary-foreground rounded-sm transition-opacity disabled:opacity-30 hover:bg-primary-light"
+              {/* Email captured confirmation */}
+              {emailCaptured && (
+                <div className="flex justify-start">
+                  <div className="flex items-center gap-2 font-body text-[13px] text-grey-text">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-primary shrink-0" />
+                    I'll email the summary to{" "}
+                    <span className="text-foreground font-medium">{userEmail}</span>.
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Input */}
+            <div className="shrink-0 px-3 pb-3 pt-2 border-t border-border bg-background">
+              <form onSubmit={onSubmit}>
+                <div className={`relative border rounded-md transition-colors ${
+                  showEmailPrompt
+                    ? "border-primary/40 bg-card/50"
+                    : "border-grey-mid bg-card focus-within:border-primary"
+                }`}>
+                  <textarea
+                    ref={inputRef}
+                    value={input}
+                    onChange={e => setInput(e.target.value)}
+                    onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(input); } }}
+                    disabled={showEmailPrompt}
+                    placeholder={
+                      showEmailPrompt
+                        ? "Share your email above to continue…"
+                        : empty
+                        ? "Describe your idea or ask anything…"
+                        : "Ask a follow-up…"
+                    }
+                    rows={2}
+                    className="w-full resize-none bg-transparent px-3 py-3 pr-12 font-body text-[14px] text-foreground placeholder:text-grey-text outline-none disabled:opacity-40 disabled:cursor-not-allowed"
+                  />
+                  <button
+                    type="submit"
+                    disabled={!input.trim() || loading || showEmailPrompt}
+                    aria-label="Send"
+                    className="absolute bottom-2.5 right-2.5 w-8 h-8 flex items-center justify-center bg-primary text-primary-foreground rounded-sm transition-opacity disabled:opacity-30 hover:bg-primary-light"
+                  >
+                    {loading
+                      ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      : showEmailPrompt
+                      ? <Lock className="w-3.5 h-3.5" />
+                      : <ArrowUp className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
+                {showEmailPrompt && (
+                  <p className="font-mono text-[9px] text-primary/70 uppercase tracking-[0.1em] text-center mt-1.5">
+                    Enter your email above to continue
+                  </p>
+                )}
+              </form>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── FAB button ── */}
+      <button
+        onClick={() => setOpen(o => !o)}
+        aria-label={open ? "Close chat" : "Chat with Glo"}
+        className="fixed bottom-6 right-4 sm:right-6 z-[99] w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30 flex items-center justify-center transition-all duration-200 hover:bg-primary-light hover:scale-105 active:scale-95"
+      >
+        <AnimatePresence mode="wait" initial={false}>
+          {open ? (
+            <motion.span
+              key="x"
+              initial={{ rotate: -80, opacity: 0 }}
+              animate={{ rotate: 0, opacity: 1 }}
+              exit={{ rotate: 80, opacity: 0 }}
+              transition={{ duration: 0.15 }}
             >
-              {loading
-                ? <Loader2 className="w-4 h-4 animate-spin" />
-                : showEmailPrompt
-                ? <Lock className="w-4 h-4" />
-                : <ArrowUp className="w-4 h-4" />}
-            </button>
-          </div>
-          {showEmailPrompt && (
-            <p className="font-mono text-[10px] text-primary/70 uppercase tracking-[0.1em] text-center mt-2">
-              Enter your email above to continue
-            </p>
+              <X className="w-5 h-5" />
+            </motion.span>
+          ) : (
+            <motion.span
+              key="chat"
+              initial={{ rotate: 80, opacity: 0 }}
+              animate={{ rotate: 0, opacity: 1 }}
+              exit={{ rotate: -80, opacity: 0 }}
+              transition={{ duration: 0.15 }}
+            >
+              <MessageCircle className="w-5 h-5" />
+            </motion.span>
           )}
-        </form>
-
-      </div>
-    </section>
+        </AnimatePresence>
+      </button>
+    </>
   );
 }

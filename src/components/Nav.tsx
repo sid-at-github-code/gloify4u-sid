@@ -44,8 +44,9 @@ const Nav = () => {
         }`}
       >
         <div className="flex items-center justify-between px-6 md:px-12 lg:px-20 h-[72px]">
-          <Link to="/" className="font-display text-xl font-medium text-foreground">
-            Gloify
+          <Link to="/" className="flex items-center">
+            <img src="/gloify-black-text.svg" alt="Gloify" className="h-7 dark:hidden" />
+            <img src="/gloify-white-text.svg" alt="Gloify" className="h-7 hidden dark:block" />
           </Link>
 
           {/* Desktop links */}

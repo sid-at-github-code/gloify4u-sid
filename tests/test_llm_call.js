@@ -2,7 +2,7 @@
 // run with: node --env-file=.env tests/test_llm_call.js
 
 const API_KEY = process.env.VITE_OPENROUTER_KEY;
-const MODEL   = "arcee-ai/trinity-large-thinking:free";  // freeze this model only this will  be used
+const MODEL   = "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free";  // freeze this model only this will  be used
 const URL     = "https://openrouter.ai/api/v1/chat/completions"; // base url fix
 
 //simple call for testing , for in app use streaming and context text 
@@ -181,5 +181,6 @@ const response = await fetch(URL, {
 });
  
 const data = await response.json();
+if (!data.choices?.[0]) { console.error("Unexpected response:", JSON.stringify(data, null, 2)); process.exit(1); }
 console.log(data.choices[0].message.content);
  

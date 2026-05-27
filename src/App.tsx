@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import FloatingChat from "./components/FloatingChat";
 
 // Heavy pages — Three.js / Spline only load when those routes are visited
 const Projects   = lazy(() => import("./pages/Projects"));
@@ -28,6 +29,7 @@ const App = () => (
             <Route path="*"            element={<NotFound />}  />
           </Routes>
         </Suspense>
+        <FloatingChat />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
