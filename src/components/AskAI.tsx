@@ -5,7 +5,7 @@ import { ChatMessage } from "./ChatMessage";
 type Msg = { role: "user" | "assistant"; content: string };
 
 const API_KEY     = import.meta.env.VITE_OPENROUTER_KEY as string;
-const MODEL       = "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free";
+const MODEL       = import.meta.env.VITE_AI_MODEL as string;
 const URL_EP      = "https://openrouter.ai/api/v1/chat/completions";
 const OWNER_EMAIL = "siddharth@gloify.com";
 
@@ -15,7 +15,7 @@ SERVICES: AI Product Engineering, Agentic automations , AI chatbots, DB intellig
 RESULTS: Clients see 19–40% revenue uplift and 35–45% ops cost reduction.
 
 Team :
-CEO - Naveen Kumar (IIT bombay) |BA - business analyst and audit - Paritosh Pandey| CMO and Operations - Girish Nair (suppy chain and finance expert| CTO - Arunoday Tiwari (acrodd all tech domains) | Co founder - Harsh Vardhan Singh (founded multiple compnaies, partner is mulitple high valuaiton startups) | devops - Rushikesh Gore | AI and solutions architech -  Siddharth Patil (forward deployed and lead in multiple projects ) | backend - rithik , ashish, yesh kandpal, Mrityunjay Tiwari (most exp backend dev), | mobile division lead - shekhar singh ( 100+ app across playstore and app store) | mobile dev - yogesh tiwari, vivek, | hr - swetha , jia jain (intern hr) | frontend web - vipin kumar singh, lead in frontend  | frontend lead and archtech - vikrant (most senior)
+CEO - Naveen Kumar (IIT bombay) |BA - business analyst and audit - Paritosh Pandey| CMO and Operations - Girish Nair (suppy chain and finance expert| CTO - Arunoday Tiwari (acrodd all tech domains) | devops - Rushikesh Gore | AI and solutions architech -  Siddharth Patil (forward deployed and lead in multiple projects ) | backend - rithik(lead), ashish (djano and node ), yash kandpal (also in ai ml), Mrityunjay Tiwari (most exp backend dev), | mobile division lead - shekhar singh ( 100+ app across playstore and app store) | mobile dev - yogesh tiwari, vivek, | hr - swetha , jia jain  | frontend web - vipin kumar singh, lead in frontend  | frontend lead and archtech - vikrant (most senior)
 (
 Naveen Kumar, Co-founder & CEO, is an alumnus of IIT Bombay, managing overall operations and driving the organization's growth and vision.He carries over 15 years of industry experience - It is 18+ years.
 
@@ -70,7 +70,7 @@ Bengaluru, Karnataka 560095
 
 RULES:
 — Be confident, concise, and consultative
-— Always end with a CTA: book a call at https://gloify.com or +91 9916232160
+— Always end with a CTA: book a call at https://gloify.com or +91 9035950939
 — Never quote prices — offer a free Opportunity Audit call
 — Keep replies short and sharp
 - TALK AND REPLY ONLY ON QUERIES RELATED TO COMPANIES, TECHNOLOGY, AI, PROJECTS, OFFICE, AND CORPORATE STUFF only. if asked for anyting irrelevent simple say - irrelevent and ask to talk about our topics ,
@@ -229,8 +229,28 @@ const DOMAIN_COLORS: Record<string, string> = {
 function extractMeta(msgs: Msg[]) {
   for (let i = msgs.length - 1; i >= 0; i--) {
     if (msgs[i].role !== "assistant") continue;
-    const m = msgs[i].content.match(/```json:gloify-meta\n([\s\S]*?)```/);
-    if (m) { try { return JSON.parse(m[1]); } catch { /* skip */ } }
+    const c = msgs[i].content;
+    // Code fence (strict or plain json)
+    const fenceMatch = c.match(/```(?:json:gloify-meta|json)\r?\n([\s\S]*?)```/);
+    if (fenceMatch) { try { return JSON.parse(fenceMatch[1]); } catch { /* skip */ } }
+    // Raw JSON appended without fences
+    const lastClose = c.lastIndexOf("}");
+    if (lastClose !== -1) {
+      let depth = 0;
+      for (let j = lastClose; j >= 0; j--) {
+        if (c[j] === "}") depth++;
+        else if (c[j] === "{") {
+          depth--;
+          if (depth === 0) {
+            try {
+              const parsed = JSON.parse(c.slice(j, lastClose + 1));
+              if (parsed?.nodes || parsed?.flow) return parsed;
+            } catch { /* skip */ }
+            break;
+          }
+        }
+      }
+    }
   }
   return null;
 }
