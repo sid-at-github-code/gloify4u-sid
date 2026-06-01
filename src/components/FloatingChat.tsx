@@ -5,6 +5,19 @@ import { ChatMessage } from "./ChatMessage";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
+const LOADING_PHRASES = [
+  "Let me think...",
+  "Understanding your question...",
+  "Looking at the context...",
+  "Working through the details...",
+  "Putting things together...",
+  "Checking for accuracy...",
+  "Preparing an answer...",
+  "Refining the response...",
+  "Just a moment...",
+  "Almost done...",
+];
+
 // ── Shared config (mirrors AskAI exactly) ─────────────────────────────────────
 const API_KEY     = import.meta.env.VITE_OPENROUTER_KEY as string;
 const MODEL       = import.meta.env.VITE_AI_MODEL as string;
@@ -343,6 +356,7 @@ export default function FloatingChat() {
   const [messages, setMessages]               = useState<Msg[]>([]);
   const [input, setInput]                     = useState("");
   const [loading, setLoading]                 = useState(false);
+  const [loadingMsg, setLoadingMsg]           = useState(LOADING_PHRASES[0]);
   const [showEmailPrompt, setShowEmailPrompt] = useState(false);
   const [emailInput, setEmailInput]           = useState("");
   const [userEmail, setUserEmail]             = useState("");
@@ -368,6 +382,16 @@ export default function FloatingChat() {
   useEffect(() => {
     if (open) requestAnimationFrame(() => inputRef.current?.focus());
   }, [open]);
+
+  // Cycle loading phrases
+  useEffect(() => {
+    if (!loading) return;
+    setLoadingMsg(LOADING_PHRASES[Math.floor(Math.random() * LOADING_PHRASES.length)]);
+    const id = setInterval(() => {
+      setLoadingMsg(LOADING_PHRASES[Math.floor(Math.random() * LOADING_PHRASES.length)]);
+    }, 2000);
+    return () => clearInterval(id);
+  }, [loading]);
 
   // Page-leave listeners — fire once on mount
   useEffect(() => {
@@ -536,13 +560,14 @@ export default function FloatingChat() {
                 </div>
               ))}
 
-              {/* Loading dots */}
+              {/* Loading message */}
               {loading && (
                 <div className="flex justify-start">
-                  <div className="flex gap-1 items-center h-6 px-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce [animation-delay:0ms]" />
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce [animation-delay:150ms]" />
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce [animation-delay:300ms]" />
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-md bg-card border border-border">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse shrink-0" />
+                    <span className="font-mono text-[11px] text-primary tracking-wide transition-all duration-500">
+                      {loadingMsg}
+                    </span>
                   </div>
                 </div>
               )}
